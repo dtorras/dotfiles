@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 echo 'start macos/apps.sh'
 
-brew cask install iterm2
-brew cask install sublime-text
-brew cask install slack
-brew cask install spotify
-brew cask install firefox
-brew cask install brave-browser
-brew cask install google-chrome
-brew cask install 1password
-brew cask install telegram
-brew cask install alfred
-brew cask install rectangle
+brew install --cask iterm2
+brew install --cask sublime-text
+brew install --cask visual-studio-code
+brew install --cask slack
+brew install --cask firefox
+brew install --cask brave-browser
+brew install --cask google-chrome
+brew install --cask 1password
+brew install --cask rectangle
+brew install --cask phpstorm
+brew install --cask tableplus
+brew install --cask fork
