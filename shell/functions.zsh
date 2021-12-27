@@ -1,3 +1,25 @@
+# Run tests
+function p() {
+   if [ -f vendor/bin/pest ]; then
+      vendor/bin/pest "$@"
+   else
+      vendor/bin/phpunit "$@"
+   fi
+}
+
+function pf() {
+   if [ -f vendor/bin/pest ]; then
+      vendor/bin/pest --filter "$@"
+   else
+      vendor/bin/phpunit --filter "$@"
+   fi
+}
+
+# Docker
+function ssh-docker() {
+   docker exec -it "$@" bash
+}
+
 # Create a new directory and enter it
 function mkd() {
    mkdir -p "$@" && cd "$@"
@@ -5,25 +27,25 @@ function mkd() {
 
 # Start an HTTP server from a directory, optionally specifying the port
 function server() {
-	local port="${1:-9000}"
-	sleep 2 && open "http://localhost:${port}/" &
-	# Set the default Content-Type to `text/plain` instead of `application/octet-stream`
-	# And serve everything as UTF-8 (although not technically correct, this doesn’t break anything for binary files)
-	python -c $'import SimpleHTTPServer;\nmap = SimpleHTTPServer.SimpleHTTPRequestHandler.extensions_map;\nmap[""] = "text/plain";\nfor key, value in map.items():\n\tmap[key] = value + ";charset=UTF-8";\nSimpleHTTPServer.test();' "$port"
+    local port="${1:-9000}"
+    sleep 2 && open "http://localhost:${port}/" &
+    # Set the default Content-Type to `text/plain` instead of `application/octet-stream`
+    # And serve everything as UTF-8 (although not technically correct, this doesn’t break anything for binary files)
+    python -c $'import SimpleHTTPServer;\nmap = SimpleHTTPServer.SimpleHTTPRequestHandler.extensions_map;\nmap[""] = "text/plain";\nfor key, value in map.items():\n\tmap[key] = value + ";charset=UTF-8";\nSimpleHTTPServer.test();' "$port"
 }
 
 # Start a PHP server from a directory, optionally specifying the port
 # (Requires PHP 5.4.0+.)
 function phpserver() {
-	local port="${1:-4000}"
-	local ip=$(ipconfig getifaddr en0)
-	sleep 2 && open "http://${ip}:${port}/" &
-	php -S "${ip}:${port}"
+    local port="${1:-4000}"
+    local ip=$(ipconfig getifaddr en0)
+    sleep 2 && open "http://${ip}:${port}/" &
+    php -S "${ip}:${port}"
 }
 
 # All the dig info
 function digga() {
-	dig +nocmd "$1" any +multiline +noall +answer
+    dig +nocmd "$1" any +multiline +noall +answer
 }
 
 archive () {
@@ -43,8 +65,6 @@ function weather() {
 
    eval "curl http://wttr.in/${city}"
 }
-
-alias mysqladm='mysql -u root'
 
 # Scrape a single webpage with all assets
 function scrapeUrl() {

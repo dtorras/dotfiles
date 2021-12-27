@@ -11,6 +11,9 @@ fi
 # Check for Homebrew and install if we don't have it
 if test ! $(which brew); then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $HOME/.zprofile
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 # Add global gitignore
@@ -25,120 +28,31 @@ ln -s $HOME/.dotfiles/shell/.zshrc $HOME/.zshrc
 cd ~/.dotfiles/shell
 chmod +x z.sh
 
-# Install composer
-echo 'Install composer'
-echo '----------------'
-EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
-
-if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]
-then
-    >&2 echo 'ERROR: Invalid installer checksum'
-    rm composer-setup.php
-    exit 1
-fi
-
-php composer-setup.php --quiet
-RESULT=$?
-rm composer-setup.php
-exit $RESULT
-
 # Install node
-echo 'Install node'
-echo '-----------'
-brew install nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 mkdir ~/.nvm
 source ~/.zshrc
-
 nvm install 16
 nvm alias default 16
 
-echo 'Install pkg-config'
-echo '------------------'
-brew install pkg-config
+# Update Homebrew recipes
+brew update
 
-echo 'Install wget'
-echo '------------'
-brew install wget --overwrite
-
-echo 'Install php'
-echo '-----------'
-brew tap shivammathur/php
-brew install shivammathur/php/php@8.0
-brew install shivammathur/php/php@7.4
-# brew install shivammathur/php/php@7.3
-
-echo 'Install imagemagick'
-echo '-------------------'
-brew install imagemagick
+# Install all our dependencies with bundle (See Brewfile)
+brew tap homebrew/bundle
+brew bundle --file $DOTFILES/Brewfile
 
 # Install PHP extensions with PECL
-echo 'Install PHP extensions with PECL'
-echo '---------------'
-brew install zlib # Needed for Memcached
-pecl install imagick memcached redis swoole
+pecl install imagick redis swoole
 
-echo 'Install xdebug'
-echo '--------------'
-pecl install xdebug
+# Install global Composer packages
+/usr/local/bin/composer global require laravel/installer laravel/valet beyondcode/expose
 
-echo 'Install Laravel Installer'
-echo '---------------------'
-composer global require "laravel/installer"
-
-echo 'Install Laravel Envoy'
-echo '---------------------'
-composer global require "laravel/envoy"
-
-echo 'Install Laravel Valet'
-echo '---------------------'
-composer global require laravel/valet
-valet install
-
-echo 'Install Expose'
-echo '---------------------'
-composer global require beyondcode/expose
-
-echo 'Install ghostscript'
-echo '-------------------'
-brew install ghostscript
-
-echo 'Install zsh-autosuggestions'
-echo '---------------------------'
-brew install zsh-autosuggestions
-
-echo 'Install image optimisation tools'
-echo '---------------------------'
-brew install ffmpeg
-brew install jpegoptim
-brew install optipng
-brew install pngquant
-brew install svgo
-brew install gifsicle
-
-echo 'Install MAS (Mac App Store manager)'
-echo '---------------------------'
-brew install mas
+# Install Laravel Valet
+$HOME/.composer/vendor/bin/valet install
 
 # Create a Sites directory
 mkdir $HOME/Sites
 
 # Set macOS preferences - we will run this last because this will reload the shell
-source $HOME/.dotfiles/macos/set-defaults.sh
-
-echo '++++++++++++++++++++++++++++++'
-echo '++++++++++++++++++++++++++++++'
-echo 'All done!'
-echo 'Things to do to make the agnoster terminal theme work:'
-echo '1. Install menlo patched font included in ~/.dotfiles/misc https://gist.github.com/qrush/1595572/raw/Menlo-Powerline.otf'
-echo '2. Install patched solarized theme included in ~/.dotfiles/misc'
-
-echo '++++++++++++++++++++++++++++++'
-echo 'Some optional tidbits'
-
-echo '1. Install Applications by running: $HOME/.dotfiles/macos/apps.sh'
-echo '2. Make a .dotfiles-custom/shell/.aliases for your personal commands'
-
-echo '++++++++++++++++++++++++++++++'
-echo '++++++++++++++++++++++++++++++'
+source $DOTFILES/.macos
