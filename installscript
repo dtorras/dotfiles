@@ -43,7 +43,8 @@ brew tap homebrew/bundle
 brew bundle --file $DOTFILES/Brewfile
 
 # Install PHP extensions with PECL
-pecl install imagick redis swoole
+pecl install redis
+#pecl install imagick #issues with imagick, brew and PHP 8.0/8.1 https://github.com/swoole/swoole-src/issues/3926
 
 # Install global Composer packages
 composer global require laravel/installer laravel/valet
