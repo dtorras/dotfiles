@@ -4,12 +4,14 @@
 touch $HOME/.hushlogin
 
 # Check for Oh My Zsh and install if we don't have it
-if test ! $(which omz); then
+if ! command -v omz help &> /dev/null
+then
   /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
 fi
 
 # Check for Homebrew and install if we don't have it
-if test ! $(which brew); then
+if ! command -v brew &> /dev/null
+then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
   echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $HOME/.zprofile
@@ -29,9 +31,12 @@ cd ~/.dotfiles/shell
 chmod +x z.sh
 
 # Install node
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-mkdir ~/.nvm
-source ~/.zshrc
+if ! command -v nvm &> /dev/null
+then
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+  mkdir ~/.nvm
+  source ~/.zshrc
+fi
 nvm install 16
 nvm alias default 16
 
