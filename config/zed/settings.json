@@ -76,7 +76,7 @@
 
   // Minimal UI
   "tab_bar": {
-    "show": false,
+    "show": true,
   },
   "toolbar": {
     "breadcrumbs": true,
