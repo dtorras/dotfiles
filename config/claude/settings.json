@@ -55,6 +55,10 @@
     ],
     "defaultMode": "acceptEdits"
   },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "enabledPlugins": {
     "laravel-simplifier@laravel": true,
     "agent-browser@agent-browser": true
